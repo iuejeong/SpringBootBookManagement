@@ -12,11 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.toyproject.bookmanagement.aop.annotation.ValidAspect;
 import com.toyproject.bookmanagement.dto.auth.SignupReqDto;
+import com.toyproject.bookmanagement.service.AuthenticationService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/auth")	// 이 컨트롤러 안에 들어오는 Mapping은 앞에 다 /auth가 붙는다.
+@RequiredArgsConstructor
 public class AuthenticationController {
 
+	private final AuthenticationService authenticationService;
+	
 	@PostMapping("/login")
 	public ResponseEntity<?> login() {
 		return ResponseEntity.ok(null);
@@ -25,8 +31,12 @@ public class AuthenticationController {
 	@CrossOrigin
 	@ValidAspect
 	@PostMapping("/signup")
-	// @Valid를 달아주면 Dto 안에 있는 email(), Pattern()과 BindingResult를 검사해준다
+	// @Valid를 달아주면 Dto 안에 있는 email(), Pattern()을 검사해준다
+	// @Valid와 BindingResult는 세트임. signReqDto의 오류를 BindingResult에게 모두 넘겨준다.
 	public ResponseEntity<?> signup(@Valid @RequestBody SignupReqDto signupReqDto, BindingResult bindingResult ) {
+		System.out.println(signupReqDto);
+		authenticationService.checkDuplicatedEmail(signupReqDto.getEmail());
+		authenticationService.signup(signupReqDto);
 		return ResponseEntity.ok(null);
 	}
 }
