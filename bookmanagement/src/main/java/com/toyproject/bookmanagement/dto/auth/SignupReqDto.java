@@ -1,6 +1,7 @@
 package com.toyproject.bookmanagement.dto.auth;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,7 +13,8 @@ import lombok.Data;
 @Data
 public class SignupReqDto {
 	
-	@Email()
+	@Email
+	@NotBlank(message="이메일을 입력하세요")
 	private String email;
 	// ^: 시작, $: 끝
 	// (?=)를 하나로 본다. 앞 쪽에 있는 것을 일치하느냐로 본다.

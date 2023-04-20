@@ -24,17 +24,17 @@
 	</resultMap>
 
 	<insert id="saveUser"
-		parameterType="com.toyproject.bookmanagement.entity.User">
+		parameterType="com.toyproject.bookmanagement.entity.User"
+		useGeneratedKeys="true"
+		keyProperty="userId">
 		insert into user_tb
 		values(0, #{email}, #{password}, #{name}, #{provider})
 	</insert>
 	
-	<insert id="addAuthorities" parameterType="list">
+	<insert id="saveAuthority" parameterType="com.toyproject.bookmanagement.entity.Authority">
 		insert into authority_tb
 		values
-		<foreach collection="list" item="authority" separator=",">
-			(0, #{authority.user_id}, #{authority.role_id})
-		</foreach>
+			(0, #{userId}, #{roleId})
 	</insert>
 
 	<select id="findUserByEmail" resultMap="userMap">

@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class Authority {
-	private int authority_id;
-	private int user_id;
-	private int role_id;
+	private int authorityId;
+	private int userId;
+	private int roleId;
 	
 	private Role role;
 }
