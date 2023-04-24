@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,4 +42,34 @@ public class AuthenticationController {
 		authenticationService.signup(signupReqDto);
 		return ResponseEntity.ok().body(true);
 	}
+	
+	@GetMapping("/authenticated")
+	public ResponseEntity<?> authenticated(String accessToken) {
+		
+		return ResponseEntity.ok().body(authenticationService.authenticated(accessToken));
+	}
+	
+	@GetMapping("/principal")
+	public ResponseEntity<?> principal(String accessToken) {
+		System.out.println(accessToken);
+		return ResponseEntity.ok().body(authenticationService.getPrincipal(accessToken));
+	}
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
