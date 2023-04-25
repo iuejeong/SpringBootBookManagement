@@ -1,14 +1,21 @@
 package com.toyproject.bookmanagement.security;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.toyproject.bookmanagement.dto.auth.JwtRespDto;
+import com.toyproject.bookmanagement.exception.CustomException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -43,8 +50,6 @@ public class JwtTokenProvider {
 		String authorities = builder.toString();
 		
 		Date tokenExpiresDate = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));	// 현재 시간 + 하루
-		
-		PrincipalUser userDetails = (PrincipalUser) authentication.getPrincipal();
 		
 		String accessToken = Jwts.builder()
 				.setSubject(authentication.getName())
@@ -98,6 +103,27 @@ public class JwtTokenProvider {
 				.build()
 				.parseClaimsJws(token)
 				.getBody();
+	}
+	
+	public Authentication getAuthentication(String accessToken) {
+		Authentication authentication = null;
+		
+		Claims claims = getClaims(accessToken);
+		if(claims.get("auth") == null) {
+			throw new CustomException("AccessToken에 권한 정보가 없습니다.");
+		}
+		
+		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+		String auth = claims.get("auth").toString();		// 권한이 없으면 null이라고 문자열로 나온다.
+		for(String role: auth.split(",")) {
+			authorities.add(new SimpleGrantedAuthority(role));
+		}
+		
+		UserDetails userDetails = new User(claims.getSubject(), "", authorities);		// password는 토큰이 없기 때문에 빈값을 줌
+		
+		authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+		return authentication;
 	}
 	
 }
