@@ -5,12 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.toyproject.bookmanagement.dto.book.CategoryRespDto;
+import com.toyproject.bookmanagement.dto.book.GetBookRespDto;
 import com.toyproject.bookmanagement.dto.book.SearchBookReqDto;
 import com.toyproject.bookmanagement.dto.book.SearchBookRespDto;
+import com.toyproject.bookmanagement.entity.Book;
+import com.toyproject.bookmanagement.entity.User;
 import com.toyproject.bookmanagement.repository.BookRepository;
+import com.toyproject.bookmanagement.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +24,12 @@ import lombok.RequiredArgsConstructor;
 public class BookService {
 	
 	private final BookRepository bookRepository;
+	private final UserRepository userRepository;
+	
+	public GetBookRespDto getBook(int bookId) {
+		return bookRepository.getBook(bookId).toGetBookDto();
+		
+	}
 	
 	public Map<String, Object> searchBooks(SearchBookReqDto searchBookReqDto) {
 		List<SearchBookRespDto> list = new ArrayList<>();
@@ -27,6 +38,7 @@ public class BookService {
 		Map<String, Object> map = new HashMap<>();
 		map.put("index", index);
 		map.put("categoryIds", searchBookReqDto.getCategoryIds());
+		map.put("searchValue", searchBookReqDto.getSearchValue());
 		
 		bookRepository.searchBooks(map).forEach(book -> {
 			list.add(book.toDto());
@@ -49,6 +61,20 @@ public class BookService {
 		});
 		
 		return list;
+	}
+	
+	public int getLikeCount(int bookId) {
+		return bookRepository.getLikeCount(bookId);
+	}
+	
+	public int getLikeStatus(int bookId) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("bookId", bookId);
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		User userEntity = userRepository.findUserByEmail(email);
+		map.put("userId", userEntity.getUserId());
+		
+		return bookRepository.getLikeStatus(map);
 	}
 	
 }
