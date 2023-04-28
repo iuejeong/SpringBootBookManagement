@@ -173,12 +173,12 @@
 			bt.book_id = #{bookId}
 	</select>
 	
-	<insert id="rentalBook">
+	<insert id="rentalBook" parameterType="hashMap">
 		insert into book_rental_tb
 		values(0, #{bookListId}, #{userId})
 	</insert>
 	
-	<delete id="returnBook">
+	<delete id="returnBook" parameterType="hashMap">
 		delete
 		from
 			book_rental_tb
@@ -186,6 +186,11 @@
 			book_list_id = #{bookListId}
 		and user_id = #{userId}
 	</delete>
+	
+	<insert id="registeBookList" parameterType="Integer">
+		insert into book_list_tb
+		values(0, #{bookId}, now())
+	</insert>
 	
 </mapper>
 
